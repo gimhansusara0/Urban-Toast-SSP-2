@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@layer components {
+  .glassy-card {
+    @apply bg-white bg-opacity-20 backdrop-blur-xl rounded-xl border border-white border-opacity-10 shadow-lg;
+  }
+}
