@@ -3,12 +3,14 @@
 namespace App\Livewire\Cart;
 
 use Livewire\Component;
-use Illuminate\Support\Facades\Http;
+use App\Models\Order;
+use App\Models\OrderItem;
+use Illuminate\Support\Facades\DB;
 
 class CartPage extends Component
 {
-    public array $items = [];
-    public float $total = 0;
+    public array $items = []; // hydrated list for rendering
+    public float $total = 0;  // only counts available items
 
     public function mount(): void
     {
@@ -17,71 +19,91 @@ class CartPage extends Component
 
     public function loadItems(): void
     {
-        $response = Http::withOptions(['with_credentials' => true])
-            ->get(url('/api/v1/cart'));
+        $rows = OrderItem::with('product')
+            ->where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->latest()->get();
 
-        if ($response->successful()) {
-            $this->items = $response->json('data') ?? [];
-            $this->total = collect($this->items)
-                ->where('available', true)
-                ->sum(fn($i) => $i['price_each'] * $i['quantity']);
-        } else {
-            $this->items = [];
-            $this->total = 0;
-        }
+        $this->items = $rows->map(function ($i) {
+            $available = optional($i->product)->status === 'active';
+            return [
+                'id'         => $i->id,
+                'name'       => optional($i->product)->name ?? 'Unknown product',
+                'image'      => optional($i->product)->image,
+                'available'  => $available,
+                'quantity'   => $i->quantity,
+                'price_each' => (float) $i->price_each,
+                'line'       => (float) $i->price_each * $i->quantity,
+            ];
+        })->toArray();
+
+        // total only counts available items
+        $this->total = collect($this->items)
+            ->where('available', true)
+            ->sum(fn($i) => $i['price_each'] * $i['quantity']);
     }
 
     public function inc(int $itemId): void
     {
-        $this->updateQuantity($itemId, fn($qty) => min(20, $qty + 1));
+        $row = OrderItem::where('user_id', auth()->id())->findOrFail($itemId);
+        if ($row->product?->status !== 'active') return; // cannot change unavailable
+        $row->quantity = min(20, $row->quantity + 1);
+        $row->save();
+        $this->dispatch('cart-updated');
+        $this->loadItems();
     }
 
     public function dec(int $itemId): void
     {
-        $this->updateQuantity($itemId, fn($qty) => max(1, $qty - 1));
-    }
-
-    protected function updateQuantity(int $itemId, \Closure $adjust): void
-    {
-        $item = collect($this->items)->firstWhere('id', $itemId);
-        if (!$item) return;
-
-        $newQty = $adjust($item['quantity']);
-
-        Http::withOptions(['with_credentials' => true])
-            ->put(url("/api/v1/cart/{$itemId}"), [
-                'quantity' => $newQty,
-            ]);
-
+        $row = OrderItem::where('user_id', auth()->id())->findOrFail($itemId);
+        if ($row->product?->status !== 'active') return;
+        $row->quantity = max(1, $row->quantity - 1);
+        $row->save();
         $this->dispatch('cart-updated');
         $this->loadItems();
     }
 
     public function remove(int $itemId): void
     {
-        Http::withOptions(['with_credentials' => true])
-            ->delete(url("/api/v1/cart/{$itemId}"));
-
+        OrderItem::where('user_id', auth()->id())->whereKey($itemId)->delete();
         $this->dispatch('cart-updated');
         $this->loadItems();
     }
 
     public function checkout(): void
     {
-        $response = Http::withOptions(['with_credentials' => true])
-            ->post(url('/api/v1/orders/checkout'));
+        // only purchase available items; ignore unavailable
+        DB::transaction(function () {
+            $items = OrderItem::with('product')
+                ->where('user_id', auth()->id())
+                ->where('status','pending')
+                ->get();
 
-        if ($response->successful()) {
-            $this->dispatch('cart-updated');
-            $this->loadItems();
-            session()->flash('ok', 'Thanks! Your order was placed.');
-        } else {
-            session()->flash('error', 'Checkout failed. Try again.');
-        }
+            $purchasable = $items->filter(fn($i) => $i->product?->status === 'active');
+
+            if ($purchasable->isEmpty()) return;
+
+            $total = $purchasable->sum(fn($i) => (float)$i->price_each * $i->quantity);
+
+            $order = Order::create([
+                'user_id'      => auth()->id(),
+                'status'       => 'paid',
+                'total'        => $total,
+                'purchased_at' => now(),
+            ]);
+
+            OrderItem::whereIn('id', $purchasable->pluck('id'))
+                ->update([
+                    'status'       => 'purchased',
+                    'order_id'     => $order->id,
+                    'purchased_at' => now(),
+                ]);
+        });
+
+        $this->dispatch('cart-updated');
+        $this->loadItems();
+        session()->flash('ok', 'Thanks! Your order was placed.');
     }
 
-    public function render()
-    {
-        return view('livewire.cart.cart-page');
-    }
+    public function render() { return view('livewire.cart.cart-page'); }
 }
