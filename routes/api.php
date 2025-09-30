@@ -16,10 +16,12 @@ Route::middleware('auth:sanctum')->prefix('v1')->as('api.')->group(function () {
     Route::apiResource('products', ProductController::class);
 
     // Cart
-    Route::get('cart', [CartController::class, 'index']);
-    Route::post('cart', [CartController::class, 'store']);
-    Route::put('cart/{item}', [CartController::class, 'update']);
-    Route::delete('cart/{item}', [CartController::class, 'destroy']);
+    // Cart
+    Route::get('cart', [CartController::class, 'index'])->name('cart.index');
+    Route::post('cart', [CartController::class, 'store'])->name('cart.store');
+    Route::put('cart/{item}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('cart/{item}', [CartController::class, 'destroy'])->name('cart.destroy');
+
 
     // Orders
     Route::get('orders', [OrderController::class, 'index']);
