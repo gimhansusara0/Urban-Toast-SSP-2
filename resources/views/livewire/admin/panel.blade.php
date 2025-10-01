@@ -33,6 +33,8 @@
       <livewire:admin.products-table key="products-table" />
     @elseif ($tab === 'categories')
       <livewire:admin.categories-table key="categories-table" />
+    @elseif ($tab === 'orders')
+       <livewire:admin.orders-table key="orders-table" />
     @elseif ($tab === 'home')
       <div class="grid gap-4 md:grid-cols-2">
         <div class="bg-white rounded-2xl shadow p-6">
@@ -43,10 +45,6 @@
           <h3 class="font-semibold mb-2">Recent activity</h3>
           <p class="text-sm text-neutral-600">Coming soon.</p>
         </div>
-      </div>
-    @else
-      <div class="bg-white rounded-2xl shadow p-6">
-        <p class="text-neutral-600">We’ll build this section next.</p>
       </div>
     @endif
   </section>

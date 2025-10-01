@@ -34,5 +34,14 @@
   </footer>
 
   @stack('scripts') {{-- optional per-page scripts --}}
+  @if(session()->has('api_token'))
+<script>
+  localStorage.setItem('api_token', @json(session('api_token')));
+  if (window.axios) {
+    axios.defaults.headers.common['Authorization'] =
+      `Bearer ${localStorage.getItem('api_token')}`;
+  }
+</script>
+@endif
 </body>
 </html>

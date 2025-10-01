@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
+use App\Http\Controllers\Api\ReviewController;
 
 /**
  * PUBLIC HOME (customers)
@@ -65,3 +66,16 @@ Route::middleware([
     })->name('cart.index');
 });
 
+
+
+Route::get('/reviews/test', function () {
+    return view('test-reviews'); // blade we add below
+})->name('reviews.test');
+
+Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+Route::get('/reviews/{review}', [ReviewController::class, 'show'])->name('reviews.show');
+Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
+
+Route::get('/products/{product}/rating', [ReviewController::class, 'productRating'])->name('products.rating');

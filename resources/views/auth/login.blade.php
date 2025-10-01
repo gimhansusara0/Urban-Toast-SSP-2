@@ -93,5 +93,21 @@
     </div>
 
   </div>
+
+
+  @if(session('api_token'))
+<script>
+  // Save Sanctum token from session into localStorage
+  const token = "{{ session('api_token') }}";
+  localStorage.setItem('api_token', token);
+
+  // Make axios use it automatically
+  if (window.axios) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  }
+
+  console.log("Sanctum token stored in localStorage.");
+</script>
+@endif
 </body>
 </html>
