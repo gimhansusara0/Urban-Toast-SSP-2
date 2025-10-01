@@ -10,12 +10,35 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\AdminOrderController;
 use App\Http\Controllers\Api\ReviewController;
 
-// ✅ Public API login
+
+// Public endpoints
+
+
+// Public API login
 Route::post('/login', [AuthController::class, 'login']);
 
+// Public reviews (read only)
+Route::prefix('v1')->as('api.')->group(function () {
+    Route::get('reviews', [ReviewController::class, 'index']);   // all reviews
+    
+});
+
+
+// Protected endpoints, needs the sanctum auth
+
 Route::middleware('auth:sanctum')->prefix('v1')->as('api.')->group(function () {
-    // User info
+    // Authenticated user info
     Route::get('/user', fn (Request $r) => $r->user());
+    Route::get('/me/customer', [ReviewController::class, 'meCustomer']);
+
+    // My reviews 
+    Route::get('reviews/my', [ReviewController::class, 'my']);
+
+    // Reviews (create, update, delete, show single)
+    Route::post('reviews', [ReviewController::class, 'store']);
+    Route::get('reviews/{review}', [ReviewController::class, 'show']); // moved here so "my" isn't caught
+    Route::put('reviews/{review}', [ReviewController::class, 'update']);
+    Route::delete('reviews/{review}', [ReviewController::class, 'destroy']);
 
     // Categories & Products
     Route::apiResource('categories', CategoryController::class);
@@ -32,14 +55,13 @@ Route::middleware('auth:sanctum')->prefix('v1')->as('api.')->group(function () {
     Route::get('orders/{order}', [OrderController::class, 'show']);
     Route::post('orders/checkout', [OrderController::class, 'checkout']);
 
-    // Reviews (protected)
-    Route::apiResource('reviews', ReviewController::class);
-
-    // Product rating (protected)
+    // Product rating
     Route::get('products/{product}/rating', [ReviewController::class, 'productRating']);
 });
 
+
 // Admin APIs
+
 Route::middleware('auth:admin')->prefix('v1/admin')->as('api.admin.')->group(function () {
     Route::get('orders', [AdminOrderController::class, 'index']);
     Route::get('orders/{order}', [AdminOrderController::class, 'show']);

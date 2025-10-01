@@ -1,25 +1,28 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'customer_id',
+        'product_id', 
+        'rating',
+        'title',
+        'body',
+        'approved',
+    ];
 
     protected $casts = [
         'approved' => 'boolean',
         'rating'   => 'integer',
     ];
 
-    // correct relation name: customer (not user)
-    public function customer()
+    public function customer(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Customer::class, 'customer_id');
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(\App\Models\Product::class, 'product_id');
+        return $this->belongsTo(Customer::class);
     }
 }
