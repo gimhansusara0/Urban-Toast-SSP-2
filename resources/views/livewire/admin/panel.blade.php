@@ -34,7 +34,7 @@
     @elseif ($tab === 'categories')
       <livewire:admin.categories-table key="categories-table" />
     @elseif ($tab === 'orders')
-       <livewire:admin.orders-table key="orders-table" />
+    <livewire:admin.user-orders-table :key="'orders-table'" />
     @elseif ($tab === 'home')
       <div class="grid gap-4 md:grid-cols-2">
         <div class="bg-white rounded-2xl shadow p-6">

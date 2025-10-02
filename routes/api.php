@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\AdminOrderController;
+use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\ReviewController;
 
 
@@ -21,6 +22,12 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::prefix('v1')->as('api.')->group(function () {
     Route::get('reviews', [ReviewController::class, 'index']);   // all reviews
     
+});
+
+Route::prefix('v1')->group(function () {
+    Route::get('reservations', [ReservationController::class, 'index']);
+    Route::post('reservations', [ReservationController::class, 'store']);
+    Route::put('reservations/{id}', [ReservationController::class, 'update']);
 });
 
 

@@ -20,34 +20,25 @@ class OrderItem extends Model
         'purchased_at',
     ];
 
-    /**
-     * The customer who added this item to cart (or purchased it).
-     * user_id -> customers.id
-     */
+//   Customer ID
     public function user(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'user_id');
     }
 
-    /**
-     * The product referenced by this item.
-     */
+    // ProductID for the Item
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    /**
-     * The order this item belongs to (nullable while in cart).
-     */
+    // OrderID
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
 
-    /**
-     * Convenience accessor for line total.
-     */
+    // TOtal
     public function getLineTotalAttribute(): float
     {
         return (float) $this->price_each * $this->quantity;

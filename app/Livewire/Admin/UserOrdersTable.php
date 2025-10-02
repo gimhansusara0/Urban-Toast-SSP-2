@@ -7,7 +7,7 @@ use Livewire\WithPagination;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 
-class OrdersTable extends Component
+class UserOrdersTable extends Component
 {
     use WithPagination;
 
@@ -71,7 +71,7 @@ class OrdersTable extends Component
             ->latest()
             ->paginate(10);
 
-        return view('livewire.admin.orders-table', [
+        return view('livewire.admin.user-orders-table', [
             'orders' => $orders,
         ]);
     }

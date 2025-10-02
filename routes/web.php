@@ -5,15 +5,14 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
 use App\Http\Controllers\Api\ReviewController;
 
-/**
- * PUBLIC HOME (customers)
- * resources/views/customers/home.blade.php
- */
+
+//   resources/views/customers/home.blade.php
+
 Route::get('/', fn () => view('customers.home'))->name('home');
 
-/**
- * Customer routes (Jetstream)
- */
+
+//   Customer routes (Jetstream)
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -22,9 +21,9 @@ Route::middleware([
     Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
 });
 
-/**
- * Admin routes
- */
+
+//  Admin routes
+
 Route::prefix('admin')->group(function () {
     Route::middleware('guest:admin')->group(function () {
         Route::get('/login', [AdminAuth::class, 'showLogin'])->name('admin.login');
@@ -39,9 +38,9 @@ Route::prefix('admin')->group(function () {
     Route::redirect('/', '/admin/dashboard');
 });
 
-/**
- * Role picker (guest users go here to pick Admin/Customer auth)
- */
+
+//  Role picker, guest or admin
+
 Route::get('/auth/role', function () {
     if (Auth::guard('admin')->check()) {
         return redirect()->route('admin.dashboard');
@@ -62,11 +61,13 @@ Route::middleware([
 
     // Cart page
     Route::get('/cart', function () {
-        return view('customers.cart'); // simple wrapper view
+        return view('customers.cart'); 
     })->name('cart.index');
 });
 
 Route::view('/reviews', 'reviews.index')->name('reviews.page');
+
+Route::view('/reservations', 'reservations')->name('reservations');
 
 
 // Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
