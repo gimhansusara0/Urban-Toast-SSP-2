@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\AuthController as AdminAuth;
 use App\Http\Controllers\Api\ReviewController;
+use App\Livewire\Reservations\ReservationPage;
 
 
 //   resources/views/customers/home.blade.php
@@ -67,13 +68,8 @@ Route::middleware([
 
 Route::view('/reviews', 'reviews.index')->name('reviews.page');
 
-Route::view('/reservations', 'reservations')->name('reservations');
 
 
-// Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-// Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-// Route::get('/reviews/{review}', [ReviewController::class, 'show'])->name('reviews.show');
-// Route::put('/reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
-// Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('reviews.destroy');
-
-// Route::get('/products/{product}/rating', [ReviewController::class, 'productRating'])->name('products.rating');
+Route::middleware(['auth']) // Jetstream's default web guard
+    ->get('/reservations', ReservationPage::class)
+    ->name('reservations.index');

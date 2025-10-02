@@ -43,7 +43,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->as('api.')->group(function () {
 
     // Reviews (create, update, delete, show single)
     Route::post('reviews', [ReviewController::class, 'store']);
-    Route::get('reviews/{review}', [ReviewController::class, 'show']); // moved here so "my" isn't caught
+    Route::get('reviews/{review}', [ReviewController::class, 'show']); 
     Route::put('reviews/{review}', [ReviewController::class, 'update']);
     Route::delete('reviews/{review}', [ReviewController::class, 'destroy']);
 

@@ -11,16 +11,16 @@ class CustomersTable extends Component
 {
     use WithPagination;
 
-    /**
-     * Applied filters (used by the query)
-     */
+   
+    //  Applied filters (used by the query)
+
     public string $search = '';           // applied search (name only)
     public string $status = 'all';        // all|active|inactive
 
-    /**
-     * UI inputs (what the user is typing/selecting)
-     * We apply them explicitly so Enter / changes feel deterministic.
-     */
+   
+    //   UI inputs (what the user is typing/selecting)
+    //  We apply them explicitly so Enter / changes feel deterministic.
+     
     public string $searchInput = '';      // text in the search box
 
     public array $selected = [];
@@ -33,9 +33,9 @@ class CustomersTable extends Component
         'status' => 'active',
     ];
 
-    /**
-     * Persist filters in URL
-     */
+
+    //  Persist filters in URL
+
     protected $queryString = [
         'search' => ['except' => ''],
         'status' => ['except' => 'all'],
@@ -43,22 +43,22 @@ class CustomersTable extends Component
 
     public function mount(): void
     {
-        // On initial load (or refresh from query string), reflect applied search into the input
+        // On initial load, reflect applied search into the input
         $this->searchInput = $this->search;
     }
 
-    /**
-     * Submit the search (Enter key or "Search" button)
-     */
+ 
+    //   Submit the search
+  
     public function applySearch(): void
     {
         $this->search = trim($this->searchInput);
         $this->resetPage();
     }
 
-    /**
-     * Change status via dropdown
-     */
+ 
+    //   Change status via dropdown
+ 
     public function changeStatus(string $value): void
     {
         $value = strtolower($value);
@@ -72,7 +72,7 @@ class CustomersTable extends Component
             $this->selected = [];
             return;
         }
-        // Select all IDs from the CURRENT filtered set (not just current page)
+        // Select all IDs from the CURRENT filtered set 
         $ids = (clone $this->query())->pluck('id')->toArray();
         $this->selected = $ids;
     }
@@ -129,9 +129,9 @@ class CustomersTable extends Component
         }
     }
 
-    /**
-     * Base query (filters by applied $status and $search)
-     */
+    
+    //  filters by applied $status and $search
+ 
     protected function query()
     {
         $s = trim($this->search);
