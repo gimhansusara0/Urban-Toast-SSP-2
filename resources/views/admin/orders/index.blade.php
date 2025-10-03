@@ -4,7 +4,17 @@
 <div class="space-y-4">
 
   {{-- Header / Tools --}}
-  <div class="bg-white rounded-2xl shadow p-4">
+  <div class="bg-white rounded-2xl shadow p-4 flex flex-col gap-4">
+    
+    {{-- Back to Dashboard --}}
+    <div>
+      <a href="{{ route('admin.dashboard') }}"
+         class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 bg-neutral-200 text-neutral-700 hover:bg-neutral-300 transition">
+        ← Back to Dashboard
+      </a>
+    </div>
+
+    {{-- Search form --}}
     <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-col md:flex-row md:items-center gap-3">
       <div class="flex-1">
         <input
@@ -62,12 +72,22 @@
             </td>
             <td class="p-3">{{ $order->purchased_at?->format('Y-m-d H:i') }}</td>
             <td class="p-3 text-right space-x-2">
-              <a href="{{ route('admin.orders.changeStatus', [$order->id, $order->status === 'completed' ? 'pending' : 'completed']) }}"
-                class="rounded-xl px-3 py-1.5 bg-[#6B4F3A] text-white hover:bg-[#5A3F2D]">
-                Mark {{ $order->status === 'completed' ? 'Pending' : 'Complete' }}
-              </a>
+              {{-- Status change form (PATCH) --}}
+              <form method="POST" 
+                    action="{{ route('admin.orders.changeStatus', [$order->id, $order->status === 'completed' ? 'pending' : 'completed']) }}" 
+                    class="inline">
+                @csrf
+                @method('PATCH')
+                <button type="submit" 
+                  class="rounded-xl px-3 py-1.5 bg-[#6B4F3A] text-white hover:bg-[#5A3F2D]">
+                  Mark {{ $order->status === 'completed' ? 'Pending' : 'Complete' }}
+                </button>
+              </form>
+
+              {{-- Delete order --}}
               <form method="POST" action="{{ route('admin.orders.destroy', $order->id) }}" class="inline">
-                @csrf @method('DELETE')
+                @csrf
+                @method('DELETE')
                 <button type="submit" onclick="return confirm('Delete this order?')"
                   class="rounded-xl px-3 py-1.5 bg-red-600 text-white hover:bg-red-500">
                   Remove

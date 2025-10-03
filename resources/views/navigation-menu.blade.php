@@ -19,14 +19,17 @@
                         {{ __('Home') }}
                     </x-nav-link>
 
-                    
-
                     <x-nav-link href="{{ url('/about') }}" :active="request()->is('about')">
                         {{ __('About') }}
                     </x-nav-link>
 
                     <x-nav-link href="{{ url('/contact') }}" :active="request()->is('contact')">
                         {{ __('Contact Us') }}
+                    </x-nav-link>
+
+                    <!-- Reservations -->
+                    <x-nav-link href="{{ route('reservations.index') }}" :active="request()->routeIs('reservations.index')">
+                        {{ __('Reservations') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -45,7 +48,6 @@
                                 <div>
                                     {{ Auth::user()->name ?? 'Account' }}
                                 </div>
-
                                 <div class="ml-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -57,7 +59,6 @@
                         </x-slot>
 
                         <x-slot name="content">
-                            <!-- Account Management -->
                             @auth
                                 <div class="block px-4 py-2 text-xs text-neutral-500">
                                     {{ __('Signed in as') }}<br>
@@ -68,7 +69,6 @@
                                     {{ __('Profile') }}
                                 </x-dropdown-link>
 
-                                <!-- Logout -->
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <x-dropdown-link :href="route('logout')"
@@ -120,6 +120,10 @@
             <x-responsive-nav-link href="{{ url('/contact') }}" :active="request()->is('contact')">
                 {{ __('Contact Us') }}
             </x-responsive-nav-link>
+            <!-- Reservations in mobile menu -->
+            <x-responsive-nav-link href="{{ route('reservations.index') }}" :active="request()->routeIs('reservations.index')">
+                {{ __('Reservations') }}
+            </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
@@ -135,7 +139,6 @@
                         {{ __('Profile') }}
                     </x-responsive-nav-link>
 
-                    <!-- Logout -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-responsive-nav-link :href="route('logout')"

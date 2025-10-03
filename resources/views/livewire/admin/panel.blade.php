@@ -38,17 +38,51 @@
       <livewire:admin.categories-table key="categories-table" />
     @elseif ($tab === 'orders')
     <livewire:orders.new-order />
-    @elseif ($tab === 'home')
-      <div class="grid gap-4 md:grid-cols-2">
-        <div class="bg-white rounded-2xl shadow p-6">
-          <h3 class="font-semibold mb-2">At a glance</h3>
-          <p class="text-sm text-neutral-600">Analytics coming soon.</p>
-        </div>
-        <div class="bg-white rounded-2xl shadow p-6">
-          <h3 class="font-semibold mb-2">Recent activity</h3>
-          <p class="text-sm text-neutral-600">Coming soon.</p>
-        </div>
+  @elseif ($tab === 'home')
+  <div class="grid gap-4 md:grid-cols-2">
+      <!-- At a glance -->
+      <div class="bg-white rounded-2xl shadow p-6">
+          <h3 class="font-semibold mb-4">At a glance</h3>
+          <ul class="space-y-2 text-sm text-neutral-700">
+              <li><strong>Customers:</strong> {{ $totalCustomers }}</li>
+              <li><strong>Orders:</strong> {{ $totalOrders }}</li>
+              <li><strong>Revenue:</strong> ${{ number_format($totalRevenue,2) }}</li>
+          </ul>
       </div>
-    @endif
+
+      <!-- Top products -->
+      <div class="bg-white rounded-2xl shadow p-6">
+          <h3 class="font-semibold mb-4">Most Bought Products</h3>
+          <ul class="space-y-2 text-sm text-neutral-700">
+              @foreach ($topProducts as $p)
+                  <li>
+                      {{ $p->product->name ?? 'Unknown' }} — {{ $p->qty }} sold
+                  </li>
+              @endforeach
+          </ul>
+      </div>
+
+      <!-- Top categories -->
+      <div class="bg-white rounded-2xl shadow p-6">
+          <h3 class="font-semibold mb-4">Most Sold Categories</h3>
+          <ul class="space-y-2 text-sm text-neutral-700">
+              @foreach ($topCategories as $c)
+                  <li>
+                      {{ $c->name }} — {{ $c->qty }} sold
+                  </li>
+              @endforeach
+          </ul>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="bg-white rounded-2xl shadow p-6">
+          <h3 class="font-semibold mb-4">Empty</h3>
+          <p class="text-sm text-neutral-600">Empty</p>
+      </div>
+  </div>
+@endif
+
+
+
   </section>
 </div>

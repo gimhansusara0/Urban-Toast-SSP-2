@@ -45,7 +45,7 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-        // ✅ Override login response to also create Sanctum token
+        //  Override login response to also create Sanctum token
         $this->app->singleton(LoginResponse::class, function () {
             return new class implements LoginResponse {
                 public function toResponse($request)
@@ -56,7 +56,7 @@ class FortifyServiceProvider extends ServiceProvider
                     // Store token in session for Blade injection
                     session(['api_token' => $token]);
 
-                    return redirect()->intended('/dashboard');
+                    return redirect()->intended('/');
                 }
             };
         });
