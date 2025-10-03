@@ -68,4 +68,60 @@ class OrderController extends Controller
 
         return new OrderResource($order->load('items.product'));
     }
+
+    // Cancel an order (only if still pending or paid)
+    public function cancel(Request $request, Order $order)
+    {
+        if ($order->user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        if (! in_array($order->status, ['pending', 'paid'])) {
+            return response()->json(['message' => 'Order cannot be cancelled.'], 400);
+        }
+
+        DB::transaction(function () use ($order) {
+            $order->update(['status' => 'cancelled']);
+
+            $order->items()->update(['status' => 'cancelled']);
+        });
+
+        return new OrderResource($order->fresh()->load('items.product'));
+    }
+
+    //Reorder (duplicate previous order into a new pending cart)
+    public function reorder(Request $request, Order $order)
+    {
+        if ($order->user_id !== $request->user()->id) {
+            abort(403, 'Unauthorized');
+        }
+
+        $newItems = [];
+        foreach ($order->items as $item) {
+            $newItems[] = OrderItem::create([
+                'user_id'   => $request->user()->id,
+                'product_id'=> $item->product_id,
+                'quantity'  => $item->quantity,
+                'line_total'=> $item->line_total,
+                'status'    => 'pending',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Items added back to your cart.',
+            'items'   => $newItems,
+        ]);
+    }
+
+    //  Admin can update status
+    public function updateStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,paid,completed,cancelled',
+        ]);
+
+        $order->update(['status' => $request->status]);
+
+        return new OrderResource($order->fresh()->load('items.product'));
+    }
 }

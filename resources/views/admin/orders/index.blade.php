@@ -1,13 +1,16 @@
-<div class="space-y-4"><!-- single root -->
+@extends('admin.layout')
+
+@section('content')
+<div class="space-y-4">
 
   {{-- Header / Tools --}}
   <div class="bg-white rounded-2xl shadow p-4">
-    <form wire:submit.prevent="render" class="flex flex-col md:flex-row md:items-center gap-3">
+    <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-col md:flex-row md:items-center gap-3">
       <div class="flex-1">
         <input
           type="text"
-          wire:model.defer="searchInput"
-          wire:keydown.enter="render"
+          name="search"
+          value="{{ $search }}"
           placeholder="Search orders by customer name…"
           class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#6B4F3A]">
       </div>
@@ -28,7 +31,6 @@
     <table class="w-full text-sm">
       <thead class="bg-neutral-50 text-neutral-600">
         <tr>
-          <th class="p-3 w-10"><input type="checkbox" wire:click="toggleSelectAll"></th>
           <th class="p-3 text-left">ID</th>
           <th class="p-3 text-left">Customer</th>
           <th class="p-3 text-left">Total</th>
@@ -40,7 +42,6 @@
       <tbody class="divide-y">
         @forelse ($orders as $order)
           <tr class="hover:bg-neutral-50">
-            <td class="p-3"><input type="checkbox" value="{{ $order->id }}" wire:model="selected"></td>
             <td class="p-3 font-medium">#{{ $order->id }}</td>
             <td class="p-3">{{ $order->user->name ?? '—' }}</td>
             <td class="p-3">Rs {{ number_format((float)$order->total, 2) }}</td>
@@ -61,46 +62,41 @@
             </td>
             <td class="p-3">{{ $order->purchased_at?->format('Y-m-d H:i') }}</td>
             <td class="p-3 text-right space-x-2">
-              <button wire:click="viewProducts({{ $order->id }})"
-                class="rounded-xl px-3 py-1.5 border border-neutral-300 hover:bg-neutral-100">
-                {{ $showProductsFor === $order->id ? 'Hide' : 'View' }}
-              </button>
-              <button wire:click="changeStatus({{ $order->id }}, '{{ $order->status === 'completed' ? 'pending' : 'completed' }}')"
+              <a href="{{ route('admin.orders.changeStatus', [$order->id, $order->status === 'completed' ? 'pending' : 'completed']) }}"
                 class="rounded-xl px-3 py-1.5 bg-[#6B4F3A] text-white hover:bg-[#5A3F2D]">
                 Mark {{ $order->status === 'completed' ? 'Pending' : 'Complete' }}
-              </button>
-              <button wire:click="delete({{ $order->id }})"
-                class="rounded-xl px-3 py-1.5 bg-red-600 text-white hover:bg-red-500">
-                Remove
-              </button>
+              </a>
+              <form method="POST" action="{{ route('admin.orders.destroy', $order->id) }}" class="inline">
+                @csrf @method('DELETE')
+                <button type="submit" onclick="return confirm('Delete this order?')"
+                  class="rounded-xl px-3 py-1.5 bg-red-600 text-white hover:bg-red-500">
+                  Remove
+                </button>
+              </form>
             </td>
           </tr>
-
-          {{-- Expanded product list --}}
-          @if ($showProductsFor === $order->id)
-            <tr class="bg-neutral-50">
-              <td colspan="7" class="p-4">
-                <h4 class="font-semibold mb-2">Products in this order:</h4>
-                <ul class="space-y-1">
-                  @foreach ($order->items as $item)
-                    <li class="flex justify-between text-sm">
-                      <span>{{ $item->product->name ?? '—' }} × {{ $item->quantity }}</span>
-                      <span>Rs {{ number_format($item->line_total, 2) }}</span>
-                    </li>
-                  @endforeach
-                </ul>
-              </td>
-            </tr>
-          @endif
+          <tr class="bg-neutral-50">
+            <td colspan="6" class="p-4">
+              <h4 class="font-semibold mb-2">Products in this order:</h4>
+              <ul class="space-y-1">
+                @foreach ($order->items as $item)
+                  <li class="flex justify-between text-sm">
+                    <span>{{ $item->product->name ?? '—' }} × {{ $item->quantity }}</span>
+                    <span>Rs {{ number_format($item->line_total, 2) }}</span>
+                  </li>
+                @endforeach
+              </ul>
+            </td>
+          </tr>
         @empty
           <tr>
-            <td colspan="7" class="p-6 text-center text-neutral-500">No orders found.</td>
+            <td colspan="6" class="p-6 text-center text-neutral-500">No orders found.</td>
           </tr>
         @endforelse
       </tbody>
     </table>
-    <div class="flex-1"></div>
   </div>
 
   <div>{{ $orders->links() }}</div>
 </div>
+@endsection

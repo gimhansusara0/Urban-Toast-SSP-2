@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Admin;
+namespace App\Http\Livewire\Orders;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -71,7 +71,7 @@ class UserOrdersTable extends Component
             ->latest()
             ->paginate(10);
 
-        return view('livewire.user-orders-table', [
+        return view('livewire.Orders.new-orders', [
             'orders' => $orders,
         ]);
     }

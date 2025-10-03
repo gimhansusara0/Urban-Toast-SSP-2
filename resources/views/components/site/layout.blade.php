@@ -12,15 +12,15 @@
 </head>
 <body class="min-h-screen bg-[#ebe0ce] text-neutral-800 antialiased">
 
-  {{-- Global navbar --}}
-  <x-site.nav />
+
+  @include('navigation-menu')
 
   {{-- Page content --}}
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     {{ $slot }}
   </main>
 
-  {{-- Footer --}}
+  
   <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 pb-10">
     <div class="h-px w-full bg-neutral-300/70 mb-4"></div>
     <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-neutral-600">
@@ -35,13 +35,13 @@
 
   @stack('scripts') {{-- optional per-page scripts --}}
   @if(session()->has('api_token'))
-<script>
-  localStorage.setItem('api_token', @json(session('api_token')));
-  if (window.axios) {
-    axios.defaults.headers.common['Authorization'] =
-      `Bearer ${localStorage.getItem('api_token')}`;
-  }
-</script>
-@endif
+    <script>
+      localStorage.setItem('api_token', @json(session('api_token')));
+      if (window.axios) {
+        axios.defaults.headers.common['Authorization'] =
+          `Bearer ${localStorage.getItem('api_token')}`;
+      }
+    </script>
+  @endif
 </body>
 </html>

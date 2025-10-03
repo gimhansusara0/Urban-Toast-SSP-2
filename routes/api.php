@@ -75,3 +75,17 @@ Route::middleware('auth:admin')->prefix('v1/admin')->as('api.admin.')->group(fun
     Route::put('orders/{order}/status', [AdminOrderController::class, 'updateStatus']);
     Route::delete('orders/{order}', [AdminOrderController::class, 'destroy']);
 });
+
+
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::get('orders', [OrderController::class, 'index']);
+    Route::post('orders/checkout', [OrderController::class, 'checkout']);
+    Route::get('orders/{order}', [OrderController::class, 'show']);
+    Route::post('orders/{order}/cancel', [OrderController::class, 'cancel']);
+    Route::post('orders/{order}/reorder', [OrderController::class, 'reorder']);
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus']); // admin use
+});
+
+
+
+

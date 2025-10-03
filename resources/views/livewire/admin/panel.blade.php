@@ -1,3 +1,5 @@
+
+
 <div class="grid grid-cols-12 gap-4"><!-- SINGLE ROOT -->
   {{-- Sidebar --}}
   <aside class="col-span-12 md:col-span-3 lg:col-span-2">
@@ -18,10 +20,11 @@
         class="w-full text-left px-4 py-2 rounded-xl {{ $tab==='categories' ? 'bg-[#6B4F3A] text-white' : 'hover:bg-neutral-100' }}">
         Categories
       </button>
-      <button wire:click="setTab('orders')"
-        class="w-full text-left px-4 py-2 rounded-xl {{ $tab==='orders' ? 'bg-[#6B4F3A] text-white' : 'hover:bg-neutral-100' }}">
-        Orders
-      </button>
+      <a href="{{ route('admin.orders.index') }}"
+  class="w-full text-left px-4 py-2 rounded-xl {{ request()->routeIs('admin.orders.index') ? 'bg-[#6B4F3A] text-white' : 'hover:bg-neutral-100' }}">
+  Orders
+</a>
+
     </div>
   </aside>
 
@@ -34,7 +37,7 @@
     @elseif ($tab === 'categories')
       <livewire:admin.categories-table key="categories-table" />
     @elseif ($tab === 'orders')
-    <livewire:admin.user-orders-table :key="'orders-table'" />
+    <livewire:orders.new-order />
     @elseif ($tab === 'home')
       <div class="grid gap-4 md:grid-cols-2">
         <div class="bg-white rounded-2xl shadow p-6">
